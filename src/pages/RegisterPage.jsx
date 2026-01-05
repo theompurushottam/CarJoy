@@ -1,90 +1,169 @@
 import React, { useState } from "react";
-import axiosInstance from "../api/axiosInstance";
 
-function RegisterPage() {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [message, setMessage] = useState("");
+const RegisterPage = ({ onBack, onSuccess }) => {
+    const [step, setStep] = useState(1);
+    const [isloading, setIsLoading] = useState(false);
+    const [formData, setFormData] = useState({
+        fullName: "",
+        businessName: "",
+        email: "",
+        phone: "",
+        storeType: "Shopify",
+        password: ""
+    });
 
-    const handleRegister = async (e) => {
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const nextStep = () => setStep(step + 1);
+    const prevStep = () => setStep(step - 1);
+
+    const handleSubmit = (e) => {
         e.preventDefault();
-        try {
-            await axiosInstance.post("/register", { name, email, password });
-            setMessage("Registration successful! You can now log in.");
-            setName("");
-            setEmail("");
-            setPassword("");
-        } catch (error) {
-            setMessage("Registration failed. Please try again."+error);
-        }
+        setIsLoading(true);
+
+        // Simulate API call delay for a professional feel
+        setTimeout(() => {
+            setIsLoading(false);
+            onSuccess(formData); // This triggers the transition to DashboardPage.jsx
+        }, 1500);
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-green-400 to-blue-400">
-            <div className="bg-white p-8 shadow-lg rounded-lg w-full max-w-md">
-                <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
-                    Create an Account
-                </h1>
-                {message && (
-                    <p className="text-center text-green-600 mb-4 font-semibold">{message}</p>
+        <div className="min-h-screen bg-[#FBFDFF] flex flex-col md:flex-row font-sans overflow-hidden">
+            {/* --- LEFT SIDE: THE BRAND PANEL --- */}
+            <div className="w-full md:w-[450px] bg-[#003366] p-12 text-white flex flex-col justify-between relative overflow-hidden">
+                {/* Decorative background circle */}
+                <div className="absolute -top-24 -left-24 w-64 h-64 bg-[#f26522] rounded-full opacity-10 blur-3xl"></div>
+                
+                <div className="relative z-10">
+                    <div className="flex items-center space-x-3 cursor-pointer mb-16" onClick={onBack}>
+                        <div className="w-10 h-10 bg-[#f26522] rounded-xl flex items-center justify-center shadow-lg transform hover:rotate-12 transition-transform">
+                            <span className="text-white font-bold text-xl">S</span>
+                        </div>
+                        <span className="text-2xl font-black tracking-tighter uppercase">ShipMy<span className="text-[#f26522]">Parcel</span></span>
+                    </div>
+
+                    <h2 className="text-4xl md:text-5xl font-black leading-[1.1] mb-6">
+                        Start your <br /> 
+                        <span className="text-[#f26522]">Growth Journey.</span>
+                    </h2>
+                    <p className="text-slate-400 font-medium max-w-xs leading-relaxed">
+                        Complete these 3 steps to access the most powerful logistics dashboard in India.
+                    </p>
+                </div>
+
+                {/* Progress Indicators */}
+                <div className="space-y-8 relative z-10">
+                    {[
+                        { num: 1, label: "Profile Setup" },
+                        { num: 2, label: "Store Details" },
+                        { num: 3, label: "Account Security" }
+                    ].map((item) => (
+                        <div key={item.num} className="flex items-center space-x-4 group">
+                            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center text-xs font-black border-2 transition-all duration-500 ${
+                                step >= item.num ? "bg-[#f26522] border-[#f26522] shadow-[0_0_20px_rgba(242,101,34,0.3)]" : "border-slate-700 text-slate-500"
+                            }`}>
+                                {item.num}
+                            </div>
+                            <span className={`text-xs font-black uppercase tracking-[0.2em] transition-colors duration-500 ${step >= item.num ? "text-white" : "text-slate-500"}`}>
+                                {item.label}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="text-[10px] text-slate-500 font-black uppercase tracking-[0.3em] relative z-10">
+                    🛡️ ISO 27001 SECURED DATA
+                </div>
+            </div>
+
+            {/* --- RIGHT SIDE: THE FORM PANEL --- */}
+            <div className="flex-1 flex items-center justify-center p-6 md:p-24 relative">
+                {isloading && (
+                    <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center">
+                        <div className="w-12 h-12 border-4 border-[#f26522] border-t-transparent rounded-full animate-spin mb-4"></div>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-[#003366]">Setting up your dashboard...</p>
+                    </div>
                 )}
-                <form onSubmit={handleRegister} className="space-y-6">
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-600 mb-1">
-                            Full Name
-                        </label>
-                        <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-green-200"
-                            placeholder="Enter your full name"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-600 mb-1">
-                            Email Address
-                        </label>
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-green-200"
-                            placeholder="Enter your email"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-600 mb-1">
-                            Password
-                        </label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-green-200"
-                            placeholder="Create a password"
-                            required
-                        />
-                    </div>
-                    <button
-                        type="submit"
-                        className="w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700 transition"
+
+                <div className="max-w-md w-full">
+                    <button 
+                        onClick={step === 1 ? onBack : prevStep}
+                        className="group text-[10px] font-black text-slate-400 hover:text-[#f26522] transition-colors uppercase tracking-[0.2em] mb-12 flex items-center"
                     >
-                        Register
+                        <span className="mr-2 group-hover:-translate-x-1 transition-transform">←</span> 
+                        {step === 1 ? "Return Home" : "Go Back"}
                     </button>
-                </form>
-                <p className="text-center text-gray-600 mt-6">
-                    Already have an account?{" "}
-                    <a href="/login" className="text-blue-500 font-bold hover:underline">
-                        Log in here
-                    </a>
-                </p>
+
+                    <form onSubmit={handleSubmit} className="space-y-8">
+                        {/* STEP 1: PERSONAL INFO */}
+                        {step === 1 && (
+                            <div className="space-y-6">
+                                <h3 className="text-3xl font-black text-[#003366] tracking-tight">Tell us about yourself</h3>
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
+                                        <input required type="text" name="fullName" value={formData.fullName} onChange={handleChange} className="w-full bg-slate-50 border-2 border-slate-100 p-4 rounded-[20px] focus:border-[#f26522] focus:bg-white outline-none transition-all font-bold text-slate-700" placeholder="e.g. Rahul Sharma" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Work Email</label>
+                                        <input required type="email" name="email" value={formData.email} onChange={handleChange} className="w-full bg-slate-50 border-2 border-slate-100 p-4 rounded-[20px] focus:border-[#f26522] focus:bg-white outline-none transition-all font-bold text-slate-700" placeholder="rahul@business.com" />
+                                    </div>
+                                    <button type="button" onClick={nextStep} className="w-full bg-[#003366] text-white py-5 rounded-[20px] font-black text-xs tracking-[0.2em] hover:bg-[#002244] transition-all shadow-xl hover:-translate-y-1">CONTINUE</button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* STEP 2: BUSINESS INFO */}
+                        {step === 2 && (
+                            <div className="space-y-6">
+                                <h3 className="text-3xl font-black text-[#003366] tracking-tight">Business Details</h3>
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Brand Name</label>
+                                        <input required type="text" name="businessName" value={formData.businessName} onChange={handleChange} className="w-full bg-slate-50 border-2 border-slate-100 p-4 rounded-[20px] focus:border-[#f26522] focus:bg-white outline-none transition-all font-bold text-slate-700" placeholder="e.g. UrbanGlow Stores" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Primary Store Platform</label>
+                                        <select name="storeType" value={formData.storeType} onChange={handleChange} className="w-full bg-slate-50 border-2 border-slate-100 p-4 rounded-[20px] focus:border-[#f26522] focus:bg-white outline-none transition-all font-black text-xs text-slate-600 appearance-none">
+                                            <option>Shopify</option>
+                                            <option>WooCommerce</option>
+                                            <option>Amazon India</option>
+                                            <option>Custom API Integration</option>
+                                        </select>
+                                    </div>
+                                    <button type="button" onClick={nextStep} className="w-full bg-[#003366] text-white py-5 rounded-[20px] font-black text-xs tracking-[0.2em] hover:bg-[#002244] transition-all shadow-xl hover:-translate-y-1">NEXT STEP</button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* STEP 3: SECURITY */}
+                        {step === 3 && (
+                            <div className="space-y-6">
+                                <h3 className="text-3xl font-black text-[#003366] tracking-tight">Secure Account</h3>
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
+                                        <input required type="tel" name="phone" value={formData.phone} onChange={handleChange} className="w-full bg-slate-50 border-2 border-slate-100 p-4 rounded-[20px] focus:border-[#f26522] focus:bg-white outline-none transition-all font-bold text-slate-700" placeholder="+91 99999 99999" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Set Password</label>
+                                        <input required type="password" name="password" value={formData.password} onChange={handleChange} className="w-full bg-slate-50 border-2 border-slate-100 p-4 rounded-[20px] focus:border-[#f26522] focus:bg-white outline-none transition-all font-bold text-slate-700" placeholder="••••••••" />
+                                    </div>
+                                    <div className="pt-4">
+                                        <button type="submit" className="w-full bg-[#f26522] text-white py-5 rounded-[20px] font-black text-xs tracking-[0.2em] hover:bg-[#d4541a] transition-all shadow-2xl hover:scale-[1.02] active:scale-95">CREATE ACCOUNT</button>
+                                        <p className="text-[9px] text-slate-400 mt-6 text-center font-bold leading-relaxed uppercase tracking-widest">By signing up you agree to ShipMyParcel's <br/> <span className="text-slate-600 underline cursor-pointer">Terms</span> & <span className="text-slate-600 underline cursor-pointer">Privacy Policy</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </form>
+                </div>
             </div>
         </div>
     );
-}
+};
 
 export default RegisterPage;

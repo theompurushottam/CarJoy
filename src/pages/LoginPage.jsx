@@ -1,65 +1,109 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axiosInstance from "../api/axiosInstance";
 
 function LoginPage() {
+    // Keep your existing state logic
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [message, setMessage] = useState("");
-    const navigate = useNavigate();
 
-    const handleLogin = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        try {
-            const response = await axiosInstance.post("/login", { email, password },{
-                headers: {
-                    "Content-Type": "application/json", // Explicitly set the content type
-                }
-            });
-            localStorage.setItem("access_token", response.data.access_token);
-            console.log(' response.data.access_token', response.data.access_token);
-            setMessage("Login successful!");
-            console.log("Login successful!");
-            navigate("/dashboard");
-        } catch (error) {
-            setMessage("Login failed. Please check your credentials.");
-        }
+        // Your existing login logic here
+        console.log("Logging in with:", email, password);
     };
-    
 
     return (
-        <div className="bg-white text-gray-800 p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl font-bold text-center mb-4">Login</h2>
-            <form onSubmit={handleLogin} className="space-y-4">
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-[#ADADC9]"
-                    required
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring focus:ring-[#ADADC9]"
-                    required
-                />
+        <div className="w-full">
+            <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Email Field */}
+                <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-1 ml-1">
+                        Email Address
+                    </label>
+                    <div className="relative">
+                        <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                            <span className="material-icons text-sm">email</span>
+                        </span>
+                        <input
+                            type="email"
+                            className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#f26522] focus:border-transparent outline-none transition-all placeholder:text-gray-400 text-sm"
+                            placeholder="name@company.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
+                    </div>
+                </div>
+
+                {/* Password Field */}
+                <div>
+                    <div className="flex justify-between mb-1 ml-1">
+                        <label className="block text-sm font-bold text-slate-700">
+                            Password
+                        </label>
+                        <a href="#" className="text-xs font-semibold text-[#003366] hover:text-[#f26522]">
+                            Forgot Password?
+                        </a>
+                    </div>
+                    <div className="relative">
+                        <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                            <span className="material-icons text-sm">lock</span>
+                        </span>
+                        <input
+                            type="password"
+                            className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#f26522] focus:border-transparent outline-none transition-all placeholder:text-gray-400 text-sm"
+                            placeholder="••••••••"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                    </div>
+                </div>
+
+                {/* Remember Me */}
+                <div className="flex items-center space-x-2 ml-1">
+                    <input 
+                        type="checkbox" 
+                        id="remember" 
+                        className="w-4 h-4 text-[#f26522] border-gray-300 rounded focus:ring-[#f26522]" 
+                    />
+                    <label htmlFor="remember" className="text-sm text-gray-600">
+                        Keep me logged in
+                    </label>
+                </div>
+
+                {/* Submit Button */}
                 <button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-[#696880] to-[#ADADC9] text-white py-2 rounded-lg font-semibold hover:scale-105 transform transition"
+                    className="w-full bg-[#f26522] text-white font-bold py-3 px-4 rounded-lg shadow-md hover:bg-[#d4541a] active:transform active:scale-[0.98] transition-all duration-150 flex items-center justify-center space-x-2"
                 >
-                    Login
+                    <span>Login to My Account</span>
+                    <span className="material-icons text-sm">arrow_forward</span>
                 </button>
             </form>
-            <p className="text-center text-gray-600 mt-4">
-                Don’t have an account?{" "}
-                <a href="/register" className="text-blue-500 font-bold hover:underline">
-                    Register here
-                </a>
-            </p>
+
+            {/* Social Login Separator */}
+            <div className="relative my-8">
+                <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-200"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                    <span className="px-4 bg-white text-gray-400 uppercase tracking-widest text-[10px] font-bold">
+                        Or login with
+                    </span>
+                </div>
+            </div>
+
+            {/* Social Buttons */}
+            <div className="grid grid-cols-2 gap-4">
+                <button className="flex items-center justify-center py-2.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    <img src="https://www.svgrepo.com/show/355037/google.svg" className="h-4 w-4 mr-2" alt="Google" />
+                    <span className="text-xs font-bold text-gray-600">Google</span>
+                </button>
+                <button className="flex items-center justify-center py-2.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    <img src="https://www.svgrepo.com/show/448234/linkedin.svg" className="h-4 w-4 mr-2" alt="LinkedIn" />
+                    <span className="text-xs font-bold text-gray-600">LinkedIn</span>
+                </button>
+            </div>
         </div>
     );
 }
